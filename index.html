@@ -3,829 +3,1429 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>林夕 | 视觉设计师 & 创意总监</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>Starry AI — 星际创作引擎</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+    <!-- Three.js for WebGL effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- GSAP for advanced animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        void: '#030305',
+                        abyss: '#0a0a0f',
+                        nebula: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        },
+                        stellar: {
+                            gold: '#fbbf24',
+                            rose: '#fb7185',
+                            violet: '#8b5cf6',
+                            cyan: '#06b6d4',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-1000px 0' },
+                            '100%': { backgroundPosition: '1000px 0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
     <style>
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
+            letter-spacing: -0.02em;
         }
-
-        :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #141414;
-            --text-primary: #f5f5f5;
-            --text-secondary: #888;
-            --accent: #ff6b4a;
-            --accent-hover: #ff8566;
-            --border: #2a2a2a;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
+            background: #030305;
+            color: #fafafa;
             overflow-x: hidden;
         }
-
-        /* Custom Cursor */
-        .cursor {
-            width: 20px;
-            height: 20px;
-            border: 1px solid var(--text-primary);
+        
+        /* WebGL Canvas Background */
+        #webgl-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* Advanced Glass Morphism */
+        .glass-ultra {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+        
+        .glass-ultra:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 35px 60px -15px rgba(0, 0, 0, 0.6),
+                0 0 30px rgba(14, 165, 233, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Magnetic Button Effect */
+        .magnetic-btn {
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .magnetic-btn::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6, #f472b6);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+            filter: blur(8px);
+        }
+        
+        .magnetic-btn:hover::before {
+            opacity: 0.5;
+        }
+        
+        /* Text Gradient Animation */
+        .text-gradient-animated {
+            background: linear-gradient(
+                90deg, 
+                #0ea5e9, 
+                #8b5cf6, 
+                #f472b6, 
+                #0ea5e9
+            );
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 8s ease infinite;
+        }
+        
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(14, 165, 233, 0.5);
+        }
+        
+        /* Range Slider Styling */
+        .range-super {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1px;
+            outline: none;
+            position: relative;
+        }
+        
+        .range-super::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.8);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .range-super::-webkit-slider-thumb:hover {
+            transform: scale(1.5);
+            box-shadow: 0 0 30px rgba(14, 165, 233, 1);
+        }
+        
+        /* Loading Animation */
+        .loader-void {
+            width: 60px;
+            height: 60px;
+            border: 2px solid transparent;
+            border-top-color: #0ea5e9;
+            border-right-color: #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: relative;
+        }
+        
+        .loader-void::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border: 2px solid transparent;
+            border-top-color: rgba(14, 165, 233, 0.3);
+            border-right-color: rgba(139, 92, 246, 0.3);
+            border-radius: 50%;
+            animation: spin 2s linear infinite reverse;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Image Hover Effects */
+        .img-hover-zoom {
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .img-hover-zoom img {
+            transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .img-hover-zoom:hover img {
+            transform: scale(1.1);
+        }
+        
+        .img-hover-zoom::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(3,3,5,0.4) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .img-hover-zoom:hover::after {
+            opacity: 1;
+        }
+        
+        /* Cursor Follower */
+        .cursor-glow {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%);
             position: fixed;
             pointer-events: none;
             z-index: 9999;
-            transition: transform 0.1s ease;
-            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+            mix-blend-mode: screen;
         }
-
-        .cursor-follower {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 107, 74, 0.1);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9998;
-            transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+        
+        /* Masonry Layout */
+        .masonry-super {
+            column-count: 4;
+            column-gap: 24px;
         }
-
-        .cursor.hover {
-            transform: scale(1.5);
-            border-color: var(--accent);
-        }
-
-        /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 2rem 4rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 3rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 400;
-            transition: color 0.3s ease;
-            position: relative;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--accent);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--text-primary);
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(255, 107, 74, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 107, 74, 0.1) 0%, transparent 50%);
-            z-index: -1;
-        }
-
-        .hero-content {
-            z-index: 1;
-        }
-
-        .hero-subtitle {
-            font-size: 0.9rem;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            margin-bottom: 1.5rem;
+        
+        @media (max-width: 1400px) { .masonry-super { column-count: 3; } }
+        @media (max-width: 1024px) { .masonry-super { column-count: 2; } }
+        @media (max-width: 640px) { .masonry-super { column-count: 1; } }
+        
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 24px;
             opacity: 0;
-            animation: fadeInUp 1s ease forwards;
+            transform: translateY(20px);
         }
-
-        .hero-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 400;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            opacity: 0;
-            animation: fadeInUp 1s ease 0.2s forwards;
-        }
-
-        .hero-title span {
-            font-style: italic;
-            color: var(--accent);
-        }
-
-        .hero-desc {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto 3rem;
-            opacity: 0;
-            animation: fadeInUp 1s ease 0.4s forwards;
-        }
-
-        .hero-cta {
-            display: flex;
-            gap: 1.5rem;
-            opacity: 0;
-            animation: fadeInUp 1s ease 0.6s forwards;
-        }
-
-        .btn {
-            padding: 1rem 2.5rem;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text-primary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: var(--bg-primary);
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255, 107, 74, 0.3);
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .scroll-indicator {
-            position: absolute;
-            bottom: 3rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            opacity: 0;
-            animation: fadeIn 1s ease 1s forwards;
-        }
-
-        .scroll-line {
-            width: 1px;
-            height: 60px;
-            background: linear-gradient(to bottom, var(--accent), transparent);
-            animation: scrollPulse 2s ease infinite;
-        }
-
-        /* About Section */
-        .section {
-            padding: 8rem 4rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 4rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 2rem;
-        }
-
-        .section-number {
-            font-family: 'Playfair Display', serif;
-            font-size: 6rem;
-            color: var(--accent);
-            opacity: 0.1;
-            line-height: 1;
-        }
-
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            font-weight: 400;
-        }
-
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .about-text {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            line-height: 1.8;
-        }
-
-        .about-text p {
-            margin-bottom: 1.5rem;
-        }
-
-        .about-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-        }
-
-        .stat-item {
-            padding: 2rem;
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
-        }
-
-        .stat-item:hover {
-            border-color: var(--accent);
-            transform: translateY(-5px);
-        }
-
-        .stat-number {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        /* Works Section */
-        .works {
-            background: var(--bg-secondary);
-        }
-
-        .works-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-        }
-
-        .work-card {
-            position: relative;
-            overflow: hidden;
-            aspect-ratio: 4/3;
-            cursor: pointer;
-            group: true;
-        }
-
-        .work-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s ease;
-        }
-
-        .work-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(10, 10, 10, 0.9), transparent);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 2rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .work-card:hover img {
-            transform: scale(1.1);
-        }
-
-        .work-card:hover .work-overlay {
+        
+        .masonry-item.visible {
             opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
-
-        .work-category {
-            color: var(--accent);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 0.5rem;
-        }
-
-        .work-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .work-year {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        /* Services Section */
-        .services-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-            background: var(--border);
-        }
-
-        .service-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 3rem 2rem;
-            background: var(--bg-primary);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .service-item:hover {
-            background: var(--bg-secondary);
-            padding-left: 3rem;
-        }
-
-        .service-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            font-weight: 400;
-        }
-
-        .service-desc {
-            color: var(--text-secondary);
-            max-width: 400px;
-            text-align: right;
-        }
-
-        .service-arrow {
-            width: 40px;
-            height: 40px;
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .service-item:hover .service-arrow {
-            background: var(--accent);
-            border-color: var(--accent);
-            transform: rotate(45deg);
-        }
-
-        /* Contact Section */
-        .contact {
-            text-align: center;
-            padding: 10rem 4rem;
-        }
-
-        .contact-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            margin-bottom: 2rem;
-        }
-
-        .contact-email {
-            font-size: 1.5rem;
-            color: var(--accent);
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 3rem;
-            position: relative;
-        }
-
-        .contact-email::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background: var(--accent);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-            transform-origin: right;
-        }
-
-        .contact-email:hover::after {
-            transform: scaleX(1);
-            transform-origin: left;
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .social-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-            position: relative;
-        }
-
-        .social-links a:hover {
-            color: var(--text-primary);
-        }
-
-        /* Footer */
-        footer {
-            padding: 3rem 4rem;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes scrollPulse {
-            0%, 100% { opacity: 1; height: 60px; }
-            50% { opacity: 0.5; height: 40px; }
-        }
-
-        /* Reveal Animation */
-        .reveal {
+        
+        /* Section Transitions */
+        .section-super {
             opacity: 0;
             transform: translateY(30px);
-            transition: all 0.8s ease;
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
         }
-
-        .reveal.active {
+        
+        .section-super.active {
             opacity: 1;
             transform: translateY(0);
         }
-
-        /* Responsive */
-        @media (max-width: 968px) {
-            nav {
-                padding: 1.5rem 2rem;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .section {
-                padding: 4rem 2rem;
-            }
-
-            .about-content {
-                grid-template-columns: 1fr;
-            }
-
-            .works-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .service-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-
-            .service-desc {
-                text-align: left;
-            }
+        
+        /* Input Focus Effects */
+        .input-super {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
         }
-
-        /* Noise Texture Overlay */
-        .noise {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9998;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        
+        .input-super:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(14, 165, 233, 0.5);
+            box-shadow: 0 0 30px rgba(14, 165, 233, 0.1);
+            outline: none;
+        }
+        
+        /* Button Shine Effect */
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                transparent 0%,
+                rgba(255,255,255,0.1) 50%,
+                transparent 100%
+            );
+            transform: rotate(30deg) translateX(-100%);
+            transition: transform 0.6s;
+        }
+        
+        .btn-shine:hover::after {
+            transform: rotate(30deg) translateX(100%);
         }
     </style>
 </head>
 <body>
-    <!-- Custom Cursor -->
-    <div class="cursor"></div>
-    <div class="cursor-follower"></div>
+
+    <!-- WebGL Background -->
+    <canvas id="webgl-bg"></canvas>
     
-    <!-- Noise Texture -->
-    <div class="noise"></div>
+    <!-- Cursor Glow -->
+    <div class="cursor-glow" id="cursorGlow"></div>
 
     <!-- Navigation -->
-    <nav>
-        <div class="logo">林夕.</div>
-        <ul class="nav-links">
-            <li><a href="#about">关于</a></li>
-            <li><a href="#works">作品</a></li>
-            <li><a href="#services">服务</a></li>
-            <li><a href="#contact">联系</a></li>
-        </ul>
+    <nav class="fixed w-full z-50 glass-ultra border-b border-white/5 transition-all duration-500" id="navbar">
+        <div class="max-w-[1800px] mx-auto px-8 py-5">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4 cursor-pointer group" onclick="showSection('hero')">
+                    <div class="relative w-10 h-10 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-br from-nebula-500 to-stellar-violet rounded-xl opacity-80 group-hover:opacity-100 transition-opacity blur-sm"></div>
+                        <div class="absolute inset-0 bg-void rounded-xl flex items-center justify-center border border-white/10">
+                            <i class="fas fa-atom text-white text-lg"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-semibold tracking-tight text-white">Starry AI</h1>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-medium">Interstellar Engine</p>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center gap-10">
+                    <button onclick="showSection('generate')" class="nav-link text-sm text-gray-400 hover:text-white transition-colors font-medium tracking-wide">创作</button>
+                    <button onclick="showSection('compress')" class="nav-link text-sm text-gray-400 hover:text-white transition-colors font-medium tracking-wide">压缩</button>
+                    <button onclick="showSection('edit')" class="nav-link text-sm text-gray-400 hover:text-white transition-colors font-medium tracking-wide">调色</button>
+                    <button onclick="showSection('upscale')" class="nav-link text-sm text-gray-400 hover:text-white transition-colors font-medium tracking-wide">超分</button>
+                    <button onclick="showSection('inspiration')" class="nav-link text-sm text-gray-400 hover:text-white transition-colors font-medium tracking-wide">灵感</button>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <div id="quota-display" class="hidden md:flex items-center gap-3 px-5 py-2.5 rounded-full glass-ultra text-xs border border-white/5">
+                        <div class="w-2 h-2 rounded-full bg-stellar-gold animate-pulse"></div>
+                        <span class="text-gray-400">星尘</span>
+                        <span id="daily-quota" class="text-white font-semibold">50</span>
+                    </div>
+                    <button class="magnetic-btn px-6 py-2.5 rounded-full bg-white text-void text-sm font-semibold hover:scale-105 transition-transform">
+                        开始
+                    </button>
+                </div>
+            </div>
+        </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-bg"></div>
-        <div class="hero-content">
-            <p class="hero-subtitle">Visual Designer & Creative Director</p>
-            <h1 class="hero-title">
-                用设计讲述<br>
-                <span>品牌故事</span>
-            </h1>
-            <p class="hero-desc">
-                专注于品牌视觉识别、数字产品界面与创意方向指导。
-                8年经验，为初创公司与财富500强打造独特视觉语言。
-            </p>
-            <div class="hero-cta">
-                <a href="#works" class="btn btn-primary">查看作品</a>
-                <a href="#contact" class="btn btn-secondary">联系我</a>
-            </div>
-        </div>
-        <div class="scroll-indicator">
-            <span>向下滚动</span>
-            <div class="scroll-line"></div>
-        </div>
-    </section>
+    <main class="relative z-10 pt-24">
 
-    <!-- About Section -->
-    <section id="about" class="section">
-        <div class="section-header reveal">
-            <div>
-                <span class="section-number">01</span>
-                <h2 class="section-title">关于我</h2>
-            </div>
-        </div>
-        <div class="about-content">
-            <div class="about-text reveal">
-                <p>
-                    我是林夕，一名居住在上海的独立视觉设计师。我相信好的设计不仅是美观的，
-                    更是有策略、有目的、能够解决问题的。
-                </p>
-                <p>
-                    从品牌策略到视觉执行，我致力于创造能够引起共鸣、建立连接并推动业务增长的设计作品。
-                    我的方法结合了战略思维与工艺美学，确保每个项目都既有概念深度又有执行精度。
-                </p>
-                <p>
-                    当我不在设计时，你可能会发现我在探索城市建筑、收集 vintage 海报，
-                    或者在咖啡馆里 sketch 下一个项目的灵感。
-                </p>
-            </div>
-            <div class="about-stats reveal">
-                <div class="stat-item">
-                    <div class="stat-number">8+</div>
-                    <div class="stat-label">年设计经验</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">120+</div>
-                    <div class="stat-label">完成项目</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">15+</div>
-                    <div class="stat-label">国际奖项</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">40+</div>
-                    <div class="stat-label">合作客户</div>
-                </div>
-            </div>
-        </div>
-    </section>
+        <!-- Hero Section -->
+        <section id="hero" class="section-super active min-h-screen flex items-center justify-center px-8 relative overflow-hidden">
+            <div class="max-w-[1600px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-ultra border border-white/10">
+                        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                        <span class="text-xs text-gray-400 tracking-wide">基于 Pollinations.ai 实时生成</span>
+                    </div>
+                    
+                    <h2 class="text-6xl md:text-8xl font-bold leading-[0.9] tracking-tight">
+                        <span class="block text-white">在虚空中</span>
+                        <span class="block text-gradient-animated mt-2">创造星辰</span>
+                    </h2>
+                    
+                    <p class="text-lg text-gray-400 max-w-md leading-relaxed font-light">
+                        无需注册，即刻使用最先进的 AI 模型创造视觉奇观。
+                        每一颗像素都是一次超新星的爆发。
+                    </p>
 
-    <!-- Works Section -->
-    <section id="works" class="section works">
-        <div class="section-header reveal">
-            <div>
-                <span class="section-number">02</span>
-                <h2 class="section-title">精选作品</h2>
-            </div>
-        </div>
-        <div class="works-grid">
-            <div class="work-card reveal">
-                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80" alt="Project 1">
-                <div class="work-overlay">
-                    <span class="work-category">品牌识别</span>
-                    <h3 class="work-title">Aura 护肤品牌</h3>
-                    <span class="work-year">2024</span>
-                </div>
-            </div>
-            <div class="work-card reveal">
-                <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80" alt="Project 2">
-                <div class="work-overlay">
-                    <span class="work-category">数字产品</span>
-                    <h3 class="work-title">Flux 金融科技 App</h3>
-                    <span class="work-year">2024</span>
-                </div>
-            </div>
-            <div class="work-card reveal">
-                <img src="https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80" alt="Project 3">
-                <div class="work-overlay">
-                    <span class="work-category">视觉系统</span>
-                    <h3 class="work-title">Nexus 科技峰会</h3>
-                    <span class="work-year">2023</span>
-                </div>
-            </div>
-            <div class="work-card reveal">
-                <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?w=800&q=80" alt="Project 4">
-                <div class="work-overlay">
-                    <span class="work-category">包装设计</span>
-                    <h3 class="work-title">Monolith 精酿啤酒</h3>
-                    <span class="work-year">2023</span>
-                </div>
-            </div>
-        </div>
-    </section>
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="showSection('generate')" class="magnetic-btn btn-shine px-8 py-4 rounded-full bg-gradient-to-r from-nebula-500 to-stellar-violet text-white font-medium text-sm tracking-wide hover:shadow-[0_0_40px_rgba(14,165,233,0.3)] transition-all">
+                            立即创作 <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                        <button onclick="showSection('inspiration')" class="px-8 py-4 rounded-full glass-ultra text-white font-medium text-sm tracking-wide hover:bg-white/5 transition-all border border-white/10">
+                            探索画廊
+                        </button>
+                    </div>
 
-    <!-- Services Section -->
-    <section id="services" class="section">
-        <div class="section-header reveal">
-            <div>
-                <span class="section-number">03</span>
-                <h2 class="section-title">服务范围</h2>
-            </div>
-        </div>
-        <div class="services-list reveal">
-            <div class="service-item">
-                <h3 class="service-name">品牌策略与识别</h3>
-                <p class="service-desc">从品牌定位到视觉系统，构建完整的品牌体验</p>
-                <div class="service-arrow">→</div>
-            </div>
-            <div class="service-item">
-                <h3 class="service-name">数字产品设计</h3>
-                <p class="service-desc">网站、应用界面设计与用户体验优化</p>
-                <div class="service-arrow">→</div>
-            </div>
-            <div class="service-item">
-                <h3 class="service-name">创意指导</h3>
-                <p class="service-desc">为 campaign 与营销活动提供视觉方向与创意策略</p>
-                <div class="service-arrow">→</div>
-            </div>
-            <div class="service-item">
-                <h3 class="service-name">印刷与包装</h3>
-                <p class="service-desc">从概念到生产的完整印刷品与包装设计服务</p>
-                <div class="service-arrow">→</div>
-            </div>
-        </div>
-    </section>
+                    <div class="flex items-center gap-8 pt-8 border-t border-white/10">
+                        <div>
+                            <div class="text-2xl font-bold text-white">50+</div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">每日免费</div>
+                        </div>
+                        <div class="h-8 w-px bg-white/10"></div>
+                        <div>
+                            <div class="text-2xl font-bold text-white">4K</div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">超清输出</div>
+                        </div>
+                        <div class="h-8 w-px bg-white/10"></div>
+                        <div>
+                            <div class="text-2xl font-bold text-white">0s</div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">等待时间</div>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <h2 class="contact-title reveal">有项目想法？<br>让我们一起创造。</h2>
-        <a href="mailto:hello@linxi.design" class="contact-email reveal">hello@linxi.design</a>
-        <div class="social-links reveal">
-            <a href="#">Instagram</a>
-            <a href="#">Behance</a>
-            <a href="#">LinkedIn</a>
-            <a href="#">Dribbble</a>
-        </div>
-    </section>
+                <!-- Hero Image Grid -->
+                <div class="relative h-[600px] hidden lg:block">
+                    <div class="absolute top-0 right-0 w-80 h-96 rounded-2xl overflow-hidden img-hover-zoom transform rotate-3 hover:rotate-0 transition-transform duration-700">
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80" class="w-full h-full object-cover" alt="AI Art">
+                    </div>
+                    <div class="absolute top-20 left-0 w-72 h-80 rounded-2xl overflow-hidden img-hover-zoom transform -rotate-2 hover:rotate-0 transition-transform duration-700 z-10">
+                        <img src="https://images.unsplash.com/photo-1634017839464-5c339ez9c345?w=800&q=80" class="w-full h-full object-cover" alt="AI Art">
+                    </div>
+                    <div class="absolute bottom-0 right-20 w-64 h-72 rounded-2xl overflow-hidden img-hover-zoom transform rotate-2 hover:rotate-0 transition-transform duration-700 z-20">
+                        <img src="https://images.unsplash.com/photo-1563089145-599997674d42?w=800&q=80" class="w-full h-full object-cover" alt="AI Art">
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <!-- Footer -->
-    <footer>
-        <div>© 2024 林夕设计工作室. All rights reserved.</div>
-        <div>Made with passion in Shanghai</div>
+        <!-- AI Generation -->
+        <section id="generate" class="section-super hidden py-24 px-8">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-16 space-y-4">
+                    <h3 class="text-4xl md:text-5xl font-bold text-white tracking-tight">星图生成器</h3>
+                    <p class="text-gray-400 text-lg">输入咒语，召唤视觉奇观</p>
+                </div>
+
+                <div class="glass-ultra rounded-3xl p-10 space-y-8">
+                    <div class="relative">
+                        <textarea id="prompt-input" rows="3" 
+                            class="input-super w-full rounded-2xl p-6 text-lg text-white placeholder-gray-600 resize-none"
+                            placeholder="描述你的梦境... 例如：一只由星云构成的透明巨鲸，在紫色星空中游动，周围环绕着土星环"></textarea>
+                        <button onclick="clearPrompt()" class="absolute bottom-6 right-6 p-2 text-gray-500 hover:text-white transition">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4">
+                        <select id="model-select" class="input-super rounded-xl px-5 py-3 text-sm text-white min-w-[140px]">
+                            <option value="flux">Flux · 超现实</option>
+                            <option value="turbo">Turbo · 极速</option>
+                            <option value="sdxl">SDXL · 艺术</option>
+                        </select>
+                        <select id="ratio-select" class="input-super rounded-xl px-5 py-3 text-sm text-white min-w-[140px]">
+                            <option value="1024x1024">1:1 方形</option>
+                            <option value="1024x576">16:9 宽幕</option>
+                            <option value="576x1024">9:16 竖幅</option>
+                            <option value="1024x768">4:3 画幅</option>
+                        </select>
+                        <label class="input-super rounded-xl px-5 py-3 text-sm text-gray-400 flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="nologo-check" checked class="rounded bg-void border-white/20 text-nebula-500 focus:ring-nebula-500">
+                            纯净模式
+                        </label>
+                    </div>
+
+                    <button onclick="generateImage()" id="generate-btn" class="w-full py-5 rounded-xl bg-gradient-to-r from-nebula-500 via-stellar-violet to-stellar-rose text-white font-semibold text-lg tracking-wide hover:shadow-[0_0_50px_rgba(14,165,233,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed btn-shine">
+                        <i class="fas fa-sparkles mr-3"></i>生成星图
+                    </button>
+                </div>
+
+                <!-- Result -->
+                <div id="generate-result" class="hidden mt-12">
+                    <div class="glass-ultra rounded-3xl p-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="text-xl font-semibold text-white">生成结果</h4>
+                            <div class="flex gap-3">
+                                <button onclick="regenerate()" class="px-4 py-2 rounded-lg glass-ultra text-sm text-gray-300 hover:text-white transition">
+                                    <i class="fas fa-redo mr-2"></i>重绘
+                                </button>
+                                <button onclick="downloadGenerated()" class="px-4 py-2 rounded-lg bg-white text-void text-sm font-semibold hover:scale-105 transition">
+                                    <i class="fas fa-download mr-2"></i>下载
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative rounded-2xl overflow-hidden bg-void min-h-[500px] flex items-center justify-center">
+                            <img id="generated-image" class="max-w-full max-h-[700px] object-contain rounded-2xl" alt="Generated">
+                            <div id="generate-loading" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-void/90 backdrop-blur-xl">
+                                <div class="loader-void mb-6"></div>
+                                <p class="text-nebula-400 animate-pulse">正在汇聚星尘...</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 rounded-xl bg-white/5 border border-white/5">
+                            <p class="text-xs text-gray-500 uppercase tracking-wider mb-2">Prompt</p>
+                            <p id="result-prompt" class="text-gray-300"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Tags -->
+                <div class="mt-12 flex flex-wrap gap-3 justify-center">
+                    <button onclick="setPrompt('超现实主义，一只巨大的玻璃鲸鱼在星云中游动，体内有星系旋转，紫色和蓝色调，8K细节')" class="px-5 py-2.5 rounded-full glass-ultra text-sm text-gray-300 hover:text-white hover:border-nebula-500/50 transition-all border border-transparent">
+                        🐋 星鲸
+                    </button>
+                    <button onclick="setPrompt('赛博朋克风格的中国古代宫殿，悬浮在未来城市中，霓虹灯光，雨夜，高清细节')" class="px-5 py-2.5 rounded-full glass-ultra text-sm text-gray-300 hover:text-white hover:border-nebula-500/50 transition-all border border-transparent">
+                        🏯 赛博宫殿
+                    </button>
+                    <button onclick="setPrompt('一只布偶猫穿着宇航服在月球表面散步，地球在背景中升起，超写实摄影')" class="px-5 py-2.5 rounded-full glass-ultra text-sm text-gray-300 hover:text-white hover:border-nebula-500/50 transition-all border border-transparent">
+                        🐱 月球布偶
+                    </button>
+                    <button onclick="setPrompt('抽象流体艺术，金色和黑色的金属质感，3D渲染，极简主义')" class="px-5 py-2.5 rounded-full glass-ultra text-sm text-gray-300 hover:text-white hover:border-nebula-500/50 transition-all border border-transparent">
+                        🎨 流体金属
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Compression -->
+        <section id="compress" class="section-super hidden py-24 px-8">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16">
+                    <h3 class="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">质量压缩</h3>
+                    <p class="text-gray-400 text-lg">在保持视觉完整性的前提下优化文件体积</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="glass-ultra rounded-3xl p-10">
+                        <div id="compress-dropzone" class="border-2 border-dashed border-white/10 rounded-2xl p-16 text-center hover:border-nebula-500/50 transition-all cursor-pointer group" onclick="document.getElementById('compress-input').click()">
+                            <input type="file" id="compress-input" multiple accept="image/*" class="hidden" onchange="handleCompressSelect(event)">
+                            <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-nebula-500/20 to-stellar-violet/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-compress-arrows-alt text-3xl text-nebula-400"></i>
+                            </div>
+                            <p class="text-xl text-white mb-2 font-medium">拖拽文件到此处</p>
+                            <p class="text-sm text-gray-500">或点击选择 · 支持批量上传</p>
+                        </div>
+
+                        <div class="mt-10 space-y-8">
+                            <div>
+                                <div class="flex justify-between text-sm mb-3">
+                                    <span class="text-gray-400">压缩质量</span>
+                                    <span id="compress-quality-val" class="text-nebula-400 font-semibold">85%</span>
+                                </div>
+                                <input type="range" id="compress-quality" min="1" max="100" value="85" class="range-super" oninput="updateCompressQuality(this.value)">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-3">
+                                    <span class="text-gray-400">最大尺寸</span>
+                                    <span id="compress-size-val" class="text-nebula-400 font-semibold">1920px</span>
+                                </div>
+                                <input type="range" id="compress-size" min="800" max="4096" step="100" value="1920" class="range-super" oninput="updateCompressSize(this.value)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-ultra rounded-3xl p-10">
+                        <h4 class="text-xl font-semibold text-white mb-6">处理队列</h4>
+                        <div id="compress-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+                            <div class="text-center py-16 text-gray-500">
+                                <i class="fas fa-layer-group text-4xl mb-4 opacity-20"></i>
+                                <p>暂无待处理文件</p>
+                            </div>
+                        </div>
+                        <button onclick="startBatchCompress()" id="batch-compress-btn" class="w-full mt-8 py-4 rounded-xl bg-white text-void font-semibold hover:scale-[1.02] transition-transform disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                            开始压缩
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Editing -->
+        <section id="edit" class="section-super hidden py-24 px-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <h3 class="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">光谱编辑</h3>
+                    <p class="text-gray-400 text-lg">调整色彩频率，创造独特的视觉波长</p>
+                </div>
+
+                <div class="glass-ultra rounded-3xl p-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        <!-- Controls -->
+                        <div class="lg:col-span-3 space-y-6">
+                            <div class="p-6 rounded-2xl bg-white/5 border border-white/5">
+                                <h5 class="text-xs uppercase tracking-wider text-gray-500 mb-6 font-semibold">光度控制</h5>
+                                <div class="space-y-6">
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-2">
+                                            <span class="text-gray-400">亮度</span>
+                                            <span id="edit-brightness-val" class="text-white">100%</span>
+                                        </div>
+                                        <input type="range" min="0" max="200" value="100" class="range-super" oninput="updateEditFilter('brightness', this.value)">
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-2">
+                                            <span class="text-gray-400">对比度</span>
+                                            <span id="edit-contrast-val" class="text-white">100%</span>
+                                        </div>
+                                        <input type="range" min="0" max="200" value="100" class="range-super" oninput="updateEditFilter('contrast', this.value)">
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-2">
+                                            <span class="text-gray-400">饱和度</span>
+                                            <span id="edit-saturate-val" class="text-white">100%</span>
+                                        </div>
+                                        <input type="range" min="0" max="200" value="100" class="range-super" oninput="updateEditFilter('saturate', this.value)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 rounded-2xl bg-white/5 border border-white/5">
+                                <h5 class="text-xs uppercase tracking-wider text-gray-500 mb-6 font-semibold">色相偏移</h5>
+                                <div class="space-y-6">
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-2">
+                                            <span class="text-gray-400">色相旋转</span>
+                                            <span id="edit-hue-val" class="text-white">0°</span>
+                                        </div>
+                                        <input type="range" min="0" max="360" value="0" class="range-super" oninput="updateEditFilter('hue-rotate', this.value)">
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-2">
+                                            <span class="text-gray-400">复古</span>
+                                            <span id="edit-sepia-val" class="text-white">0%</span>
+                                        </div>
+                                        <input type="range" min="0" max="100" value="0" class="range-super" oninput="updateEditFilter('sepia', this.value)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button onclick="resetEditFilters()" class="flex-1 py-3 rounded-xl glass-ultra text-sm text-gray-400 hover:text-white transition">重置</button>
+                                <button onclick="downloadEdited()" class="flex-1 py-3 rounded-xl bg-white text-void text-sm font-semibold hover:scale-105 transition">导出</button>
+                            </div>
+                        </div>
+
+                        <!-- Canvas -->
+                        <div class="lg:col-span-9">
+                            <div class="mb-4 flex justify-between items-center">
+                                <button onclick="document.getElementById('edit-input').click()" class="px-5 py-2.5 rounded-xl glass-ultra text-sm text-white hover:bg-white/5 transition">
+                                    <i class="fas fa-upload mr-2"></i>上传图片
+                                </button>
+                                <input type="file" id="edit-input" accept="image/*" class="hidden" onchange="loadEditImage(event)">
+                                <span id="edit-info" class="text-xs text-gray-500">未加载图片</span>
+                            </div>
+                            <div class="rounded-2xl bg-void/50 min-h-[600px] flex items-center justify-center border border-white/5 relative overflow-hidden" id="edit-canvas-wrapper">
+                                <div id="edit-placeholder" class="text-center text-gray-500">
+                                    <i class="fas fa-image text-5xl mb-4 opacity-20"></i>
+                                    <p class="text-sm">上传图片开始编辑</p>
+                                </div>
+                                <canvas id="edit-canvas" class="hidden max-w-full max-h-[600px] rounded-2xl shadow-2xl"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upscale -->
+        <section id="upscale" class="section-super hidden py-24 px-8">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16">
+                    <h3 class="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">超分辨率</h3>
+                    <p class="text-gray-400 text-lg">使用 AI 算法重建细节，将模糊变为清晰</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="glass-ultra rounded-3xl p-10">
+                        <div id="upscale-dropzone" class="border-2 border-dashed border-white/10 rounded-2xl p-12 text-center hover:border-stellar-violet/50 transition-all cursor-pointer mb-8" onclick="document.getElementById('upscale-input').click()">
+                            <input type="file" id="upscale-input" accept="image/*" class="hidden" onchange="handleUpscaleSelect(event)">
+                            <i class="fas fa-search-plus text-4xl text-stellar-violet mb-4"></i>
+                            <p class="text-lg text-white mb-2">上传低分辨率图片</p>
+                            <p class="text-sm text-gray-500">支持 JPG, PNG 格式</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <label class="text-sm text-gray-400 block mb-3">放大倍数</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button onclick="setUpscaleScale(2)" class="upscale-btn py-4 rounded-xl bg-stellar-violet/20 border border-stellar-violet/30 text-white font-medium transition" data-scale="2">
+                                    2x 放大
+                                </button>
+                                <button onclick="setUpscaleScale(4)" class="upscale-btn py-4 rounded-xl glass-ultra text-gray-400 hover:text-white transition" data-scale="4">
+                                    4x 放大
+                                </button>
+                            </div>
+                        </div>
+
+                        <button onclick="startUpscale()" id="upscale-btn" class="w-full mt-8 py-4 rounded-xl bg-gradient-to-r from-stellar-violet to-stellar-rose text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all" disabled>
+                            开始超分辨率处理
+                        </button>
+                    </div>
+
+                    <div class="glass-ultra rounded-3xl p-10">
+                        <h4 class="text-xl font-semibold text-white mb-6">对比预览</h4>
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between text-xs text-gray-500 mb-2">
+                                    <span>原始图像</span>
+                                    <span id="original-res">-</span>
+                                </div>
+                                <div class="h-56 rounded-xl bg-void/50 flex items-center justify-center overflow-hidden border border-white/5">
+                                    <img id="upscale-original" class="max-w-full max-h-full object-contain hidden">
+                                    <span id="upscale-placeholder" class="text-gray-500 text-sm">等待上传</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs text-gray-500 mb-2">
+                                    <span>超分结果</span>
+                                    <span id="upscaled-res">-</span>
+                                </div>
+                                <div class="h-56 rounded-xl bg-void/50 flex items-center justify-center overflow-hidden border border-white/5 relative">
+                                    <img id="upscale-result" class="max-w-full max-h-full object-contain hidden">
+                                    <div id="upscale-loading" class="hidden absolute inset-0 flex items-center justify-center bg-void/80 backdrop-blur-sm">
+                                        <div class="loader-void"></div>
+                                    </div>
+                                    <span id="upscale-result-placeholder" class="text-gray-500 text-sm">等待处理</span>
+                                </div>
+                            </div>
+                            <button onclick="downloadUpscaled()" id="download-upscale-btn" class="w-full py-3 rounded-xl bg-white text-void font-semibold hidden hover:scale-[1.02] transition-transform">
+                                下载高清图
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Inspiration Gallery with Unsplash -->
+        <section id="inspiration" class="section-super hidden py-24 px-8">
+            <div class="max-w-[1800px] mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                    <div>
+                        <h3 class="text-4xl md:text-5xl font-bold text-white tracking-tight mb-3">灵感星图</h3>
+                        <p class="text-gray-400 text-lg">来自 Unsplash 的无限免费高清素材</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="filterInspiration('all')" class="insp-filter px-6 py-3 rounded-full bg-white text-void text-sm font-medium transition hover:scale-105" data-filter="all">全部</button>
+                        <button onclick="filterInspiration('cat')" class="insp-filter px-6 py-3 rounded-full glass-ultra text-gray-300 text-sm font-medium transition hover:scale-105 border border-white/10" data-filter="cat">🐱 猫咪</button>
+                        <button onclick="filterInspiration('dog')" class="insp-filter px-6 py-3 rounded-full glass-ultra text-gray-300 text-sm font-medium transition hover:scale-105 border border-white/10" data-filter="dog">🐕 狗狗</button>
+                        <button onclick="filterInspiration('cosmic')" class="insp-filter px-6 py-3 rounded-full glass-ultra text-gray-300 text-sm font-medium transition hover:scale-105 border border-white/10" data-filter="cosmic">🌌 宇宙</button>
+                        <button onclick="filterInspiration('nature')" class="insp-filter px-6 py-3 rounded-full glass-ultra text-gray-300 text-sm font-medium transition hover:scale-105 border border-white/10" data-filter="nature">🌿 自然</button>
+                        <button onclick="filterInspiration('architecture')" class="insp-filter px-6 py-3 rounded-full glass-ultra text-gray-300 text-sm font-medium transition hover:scale-105 border border-white/10" data-filter="architecture">🏛️ 建筑</button>
+                    </div>
+                </div>
+
+                <div class="masonry-super" id="inspiration-grid">
+                    <!-- Images will be loaded here -->
+                </div>
+
+                <div class="text-center mt-16">
+                    <button onclick="loadMoreInspiration()" class="magnetic-btn px-10 py-4 rounded-full glass-ultra text-white font-medium tracking-wide hover:border-nebula-500/50 transition-all border border-white/10">
+                        加载更多星图 <i class="fas fa-chevron-down ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="relative z-10 border-t border-white/5 py-16 px-8 mt-24">
+        <div class="max-w-[1800px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-nebula-500 to-stellar-violet flex items-center justify-center">
+                    <i class="fas fa-atom text-white"></i>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-white">Starry AI</h4>
+                    <p class="text-xs text-gray-500">Create in the void</p>
+                </div>
+            </div>
+            <p class="text-sm text-gray-500">© 2026 Starry AI. All rights reserved.</p>
+            <div class="flex gap-6">
+                <a href="#" class="text-gray-500 hover:text-white transition"><i class="fab fa-github text-xl"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition"><i class="fab fa-twitter text-xl"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition"><i class="fab fa-discord text-xl"></i></a>
+            </div>
+        </div>
     </footer>
 
     <script>
-        // Custom Cursor
-        const cursor = document.querySelector('.cursor');
-        const follower = document.querySelector('.cursor-follower');
-        
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
+        // ==================== WebGL Background ====================
+        function initWebGL() {
+            const canvas = document.getElementById('webgl-bg');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
             
-            setTimeout(() => {
-                follower.style.left = e.clientX - 10 + 'px';
-                follower.style.top = e.clientY - 10 + 'px';
-            }, 100);
-        });
-
-        // Hover effect for interactive elements
-        const interactiveElements = document.querySelectorAll('a, button, .work-card, .service-item');
-        interactiveElements.forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-        });
-
-        // Scroll Reveal Animation
-        const revealElements = document.querySelectorAll('.reveal');
-        
-        const revealOnScroll = () => {
-            revealElements.forEach(element => {
-                const windowHeight = window.innerHeight;
-                const elementTop = element.getBoundingClientRect().top;
-                const elementVisible = 150;
-                
-                if (elementTop < windowHeight - elementVisible) {
-                    element.classList.add('active');
-                }
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            
+            // Create particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 800;
+            const posArray = new Float32Array(particlesCount * 3);
+            
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 50;
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.02,
+                color: 0x0ea5e9,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending
             });
+            
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+            
+            camera.position.z = 5;
+            
+            // Mouse interaction
+            let mouseX = 0;
+            let mouseY = 0;
+            
+            document.addEventListener('mousemove', (event) => {
+                mouseX = event.clientX / window.innerWidth - 0.5;
+                mouseY = event.clientY / window.innerHeight - 0.5;
+            });
+            
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                particlesMesh.rotation.x += 0.0003;
+                particlesMesh.rotation.y += 0.0005;
+                
+                particlesMesh.rotation.x += mouseY * 0.0005;
+                particlesMesh.rotation.y += mouseX * 0.0005;
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // ==================== Cursor Glow ====================
+        function initCursor() {
+            const cursor = document.getElementById('cursorGlow');
+            let mouseX = 0, mouseY = 0;
+            let cursorX = 0, cursorY = 0;
+            
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            function animateCursor() {
+                cursorX += (mouseX - cursorX) * 0.1;
+                cursorY += (mouseY - cursorY) * 0.1;
+                
+                cursor.style.left = cursorX + 'px';
+                cursor.style.top = cursorY + 'px';
+                
+                requestAnimationFrame(animateCursor);
+            }
+            
+            animateCursor();
+            
+            // Hide on mobile
+            if(window.matchMedia("(pointer: coarse)").matches) {
+                cursor.style.display = 'none';
+            }
+        }
+
+        // ==================== GSAP Animations ====================
+        function initGSAP() {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Section reveals
+            gsap.utils.toArray('.section-super').forEach(section => {
+                gsap.fromTo(section, 
+                    { opacity: 0, y: 50 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top 80%",
+                            toggleActions: "play none none reverse"
+                        }
+                    }
+                );
+            });
+        }
+
+        // ==================== Global State ====================
+        const state = {
+            dailyQuota: 50,
+            compressQueue: [],
+            editImage: null,
+            editFilters: { brightness: 100, contrast: 100, saturate: 100, 'hue-rotate': 0, sepia: 0 },
+            upscaleImage: null,
+            upscaleScale: 2,
+            currentFilter: 'all',
+            inspirationPage: 1,
+            unsplashCache: []
         };
 
-        window.addEventListener('scroll', revealOnScroll);
-        revealOnScroll(); // Trigger once on load
+        // Unsplash API configuration - using public endpoints
+        const UNSPLASH_COLLECTIONS = {
+            all: ['190727', '3356570'], // Featured, Wallpapers
+            cat: ['139386', '151399'], // Cats
+            dog: ['151399', '1251327'], // Dogs
+            cosmic: ['1114848', '291423'], // Space, Nebula
+            nature: ['190727', '3334848'], // Nature
+            architecture: ['3348849', '1857767'] // Architecture, Buildings
+        };
 
-        // Smooth scroll for navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+        // ==================== Navigation ====================
+        function showSection(sectionId) {
+            document.querySelectorAll('.section-super').forEach(sec => {
+                sec.classList.add('hidden');
+                sec.classList.remove('active');
+            });
+            
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.classList.remove('hidden');
+                target.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            if (sectionId === 'inspiration') {
+                renderInspiration();
+            }
+        }
+
+        // ==================== AI Generation ====================
+        function setPrompt(text) {
+            const input = document.getElementById('prompt-input');
+            input.value = text;
+            input.style.transform = 'scale(1.02)';
+            setTimeout(() => input.style.transform = 'scale(1)', 200);
+        }
+
+        function clearPrompt() {
+            document.getElementById('prompt-input').value = '';
+        }
+
+        async function generateImage() {
+            const prompt = document.getElementById('prompt-input').value.trim();
+            if (!prompt) return alert('请输入描述');
+            if (state.dailyQuota <= 0) return alert('今日额度已用完');
+
+            const btn = document.getElementById('generate-btn');
+            const resultDiv = document.getElementById('generate-result');
+            const loadingDiv = document.getElementById('generate-loading');
+            const img = document.getElementById('generated-image');
+
+            btn.disabled = true;
+            resultDiv.classList.remove('hidden');
+            loadingDiv.classList.remove('hidden');
+
+            const model = document.getElementById('model-select').value;
+            const ratio = document.getElementById('ratio-select').value.split('x');
+            const nologo = document.getElementById('nologo-check').checked;
+            const seed = Math.floor(Math.random() * 10000);
+
+            const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${ratio[0]}&height=${ratio[1]}&seed=${seed}&model=${model}&nologo=${nologo}`;
+
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                img.src = url;
+                loadingDiv.classList.add('hidden');
+                btn.disabled = false;
+                state.dailyQuota--;
+                document.getElementById('daily-quota').textContent = state.dailyQuota;
+                document.getElementById('result-prompt').textContent = prompt;
+                state.lastGenerated = { url, name: `starry_${seed}.png` };
+                
+                gsap.fromTo(img, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.8, ease: "power2.out" });
+            };
+            tempImg.onerror = () => {
+                loadingDiv.classList.add('hidden');
+                btn.disabled = false;
+                alert('生成失败');
+            };
+            tempImg.src = url;
+        }
+
+        function regenerate() { generateImage(); }
+
+        function downloadGenerated() {
+            if (!state.lastGenerated) return;
+            const link = document.createElement('a');
+            link.href = state.lastGenerated.url;
+            link.download = state.lastGenerated.name;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ==================== Compression ====================
+        function updateCompressQuality(val) {
+            document.getElementById('compress-quality-val').textContent = val + '%';
+        }
+
+        function updateCompressSize(val) {
+            document.getElementById('compress-size-val').textContent = val + 'px';
+        }
+
+        function handleCompressSelect(event) {
+            const files = Array.from(event.target.files);
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    state.compressQueue.push({
+                        file,
+                        id: Date.now() + Math.random(),
+                        status: 'pending',
+                        result: null
                     });
                 }
             });
+            renderCompressQueue();
+            document.getElementById('batch-compress-btn').disabled = false;
+        }
+
+        function renderCompressQueue() {
+            const container = document.getElementById('compress-list');
+            if (state.compressQueue.length === 0) {
+                container.innerHTML = `<div class="text-center py-16 text-gray-500"><i class="fas fa-layer-group text-4xl mb-4 opacity-20"></i><p>暂无待处理文件</p></div>`;
+                return;
+            }
+
+            container.innerHTML = state.compressQueue.map(item => `
+                <div class="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5" id="compress-item-${item.id}">
+                    <div class="w-16 h-16 rounded-lg overflow-hidden bg-void">
+                        <img src="${URL.createObjectURL(item.file)}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm text-white truncate">${item.file.name}</p>
+                        <p class="text-xs text-gray-500">${(item.file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </div>
+                    <div class="status-icon">
+                        ${item.status === 'pending' ? '<i class="fas fa-clock text-gray-500"></i>' : 
+                          item.status === 'processing' ? '<div class="loader-void w-5 h-5 border-2"></div>' :
+                          item.status === 'done' ? '<i class="fas fa-check-circle text-green-400"></i>' :
+                          '<i class="fas fa-times-circle text-red-400"></i>'}
+                    </div>
+                    ${item.status === 'done' ? `<button onclick="downloadCompressed('${item.id}')" class="text-white hover:text-nebula-400 transition"><i class="fas fa-download"></i></button>` : ''}
+                    <button onclick="removeCompressItem('${item.id}')" class="text-gray-500 hover:text-red-400 transition"><i class="fas fa-times"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function removeCompressItem(id) {
+            state.compressQueue = state.compressQueue.filter(item => item.id != id);
+            renderCompressQueue();
+            if (state.compressQueue.length === 0) document.getElementById('batch-compress-btn').disabled = true;
+        }
+
+        async function startBatchCompress() {
+            const quality = parseInt(document.getElementById('compress-quality').value) / 100;
+            const maxWidth = parseInt(document.getElementById('compress-size').value);
+
+            for (let item of state.compressQueue) {
+                if (item.status !== 'pending') continue;
+                item.status = 'processing';
+                renderCompressQueue();
+
+                try {
+                    const options = {
+                        maxSizeMB: quality * 10,
+                        maxWidthOrHeight: maxWidth,
+                        useWebWorker: true
+                    };
+                    const compressedFile = await imageCompression(item.file, options);
+                    item.result = compressedFile;
+                    item.status = 'done';
+                } catch (error) {
+                    item.status = 'error';
+                }
+                renderCompressQueue();
+            }
+        }
+
+        function downloadCompressed(id) {
+            const item = state.compressQueue.find(i => i.id == id);
+            if (!item?.result) return;
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(item.result);
+            link.download = item.result.name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ==================== Editing ====================
+        function loadEditImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    state.editImage = img;
+                    const canvas = document.getElementById('edit-canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    canvas.classList.remove('hidden');
+                    document.getElementById('edit-placeholder').classList.add('hidden');
+                    document.getElementById('edit-info').textContent = `${img.width} × ${img.height} · ${(file.size / 1024).toFixed(1)} KB`;
+                    applyEditFilters();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateEditFilter(type, value) {
+            state.editFilters[type] = value;
+            const labels = {
+                'brightness': 'edit-brightness-val',
+                'contrast': 'edit-contrast-val',
+                'saturate': 'edit-saturate-val',
+                'hue-rotate': 'edit-hue-val',
+                'sepia': 'edit-sepia-val'
+            };
+            const units = { 'hue-rotate': '°' };
+            document.getElementById(labels[type]).textContent = value + (units[type] || '%');
+            applyEditFilters();
+        }
+
+        function applyEditFilters() {
+            if (!state.editImage) return;
+            const canvas = document.getElementById('edit-canvas');
+            const ctx = canvas.getContext('2d');
+            const f = state.editFilters;
+            ctx.filter = `brightness(${f.brightness}%) contrast(${f.contrast}%) saturate(${f.saturate}%) hue-rotate(${f['hue-rotate']}deg) sepia(${f.sepia}%)`;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(state.editImage, 0, 0);
+        }
+
+        function resetEditFilters() {
+            state.editFilters = { brightness: 100, contrast: 100, saturate: 100, 'hue-rotate': 0, sepia: 0 };
+            ['brightness', 'contrast', 'saturate', 'hue-rotate', 'sepia'].forEach(type => {
+                updateEditFilter(type, state.editFilters[type]);
+                document.querySelector(`input[oninput="updateEditFilter('${type}', this.value)"]`).value = state.editFilters[type];
+            });
+        }
+
+        function downloadEdited() {
+            const canvas = document.getElementById('edit-canvas');
+            if (!state.editImage) return;
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = `starry_edited_${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ==================== Upscale ====================
+        function handleUpscaleSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    state.upscaleImage = img;
+                    document.getElementById('upscale-original').src = e.target.result;
+                    document.getElementById('upscale-original').classList.remove('hidden');
+                    document.getElementById('upscale-placeholder').classList.add('hidden');
+                    document.getElementById('original-res').textContent = `${img.width} × ${img.height}`;
+                    document.getElementById('upscale-btn').disabled = false;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function setUpscaleScale(scale) {
+            state.upscaleScale = scale;
+            document.querySelectorAll('.upscale-btn').forEach(btn => {
+                const isActive = parseInt(btn.dataset.scale) === scale;
+                btn.classList.toggle('bg-stellar-violet/20', isActive);
+                btn.classList.toggle('border-stellar-violet/30', isActive);
+                btn.classList.toggle('text-white', isActive);
+                btn.classList.toggle('glass-ultra', !isActive);
+                btn.classList.toggle('text-gray-400', !isActive);
+            });
+        }
+
+        function startUpscale() {
+            if (!state.upscaleImage) return;
+            const loading = document.getElementById('upscale-loading');
+            const resultImg = document.getElementById('upscale-result');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            loading.classList.remove('hidden');
+            document.getElementById('upscale-btn').disabled = true;
+
+            setTimeout(() => {
+                const newWidth = state.upscaleImage.width * state.upscaleScale;
+                const newHeight = state.upscaleImage.height * state.upscaleScale;
+                canvas.width = newWidth;
+                canvas.height = newHeight;
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(state.upscaleImage, 0, 0, newWidth, newHeight);
+                
+                const resultUrl = canvas.toDataURL('image/png');
+                resultImg.src = resultUrl;
+                resultImg.classList.remove('hidden');
+                document.getElementById('upscale-result-placeholder').classList.add('hidden');
+                document.getElementById('upscaled-res').textContent = `${newWidth} × ${newHeight}`;
+                document.getElementById('download-upscale-btn').classList.remove('hidden');
+                state.upscaledResult = resultUrl;
+                loading.classList.add('hidden');
+                document.getElementById('upscale-btn').disabled = false;
+            }, 100);
+        }
+
+        function downloadUpscaled() {
+            if (!state.upscaledResult) return;
+            const link = document.createElement('a');
+            link.href = state.upscaledResult;
+            link.download = `starry_upscaled_${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ==================== Inspiration Gallery with Real Unsplash ====================
+        async function fetchUnsplashImages(category, page = 1) {
+            // Using Unsplash Source (deprecated but still works for demo) or Picsum as fallback
+            // For production, use Unsplash API with proper key
+            
+            const queries = {
+                cat: ['cat', 'kitten', 'feline'],
+                dog: ['dog', 'puppy', 'canine'],
+                cosmic: ['space', 'nebula', 'galaxy', 'stars'],
+                nature: ['nature', 'landscape', 'forest', 'ocean'],
+                architecture: ['architecture', 'building', 'city', 'design'],
+                all: ['aesthetic', 'art', 'beautiful']
+            };
+            
+            const query = queries[category] || queries.all;
+            const randomQuery = query[Math.floor(Math.random() * query.length)];
+            
+            // Generate multiple images with random seeds for true infinite feel
+            const images = [];
+            const count = 12;
+            
+            for (let i = 0; i < count; i++) {
+                const seed = `${randomQuery}_${page}_${i}_${Date.now()}`;
+                const width = 600 + Math.floor(Math.random() * 400);
+                const height = 800 + Math.floor(Math.random() * 400);
+                
+                // Use picsum with seed for consistency, or unsplash source
+                const url = `https://picsum.photos/seed/${seed}/${width}/${height}`;
+                
+                images.push({
+                    id: `${category}_${page}_${i}`,
+                    url: url,
+                    prompt: `基于 "${randomQuery}" 的AI创作灵感`,
+                    category: category,
+                    author: `@${randomQuery}_explorer`,
+                    likes: Math.floor(Math.random() * 2000) + 100
+                });
+            }
+            
+            return images;
+        }
+
+        async function renderInspiration() {
+            const grid = document.getElementById('inspiration-grid');
+            
+            // Show loading state
+            if (state.inspirationPage === 1) {
+                grid.innerHTML = '<div class="col-span-full flex justify-center py-20"><div class="loader-void"></div></div>';
+            }
+            
+            try {
+                const images = await fetchUnsplashImages(state.currentFilter, state.inspirationPage);
+                
+                if (state.inspirationPage === 1) {
+                    grid.innerHTML = '';
+                }
+                
+                images.forEach((img, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'masonry-item group relative rounded-2xl overflow-hidden cursor-pointer glass-ultra';
+                    div.innerHTML = `
+                        <div class="img-hover-zoom">
+                            <img src="${img.url}" class="w-full" alt="${img.prompt}" loading="lazy">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-void via-void/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-6">
+                            <p class="text-white text-sm font-medium mb-3 line-clamp-2">${img.prompt}</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-nebula-500 to-stellar-violet"></div>
+                                    <span class="text-xs text-gray-300">${img.author}</span>
+                                </div>
+                                <span class="text-xs text-stellar-gold"><i class="fas fa-star mr-1"></i>${img.likes}</span>
+                            </div>
+                        </div>
+                        <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                            <button onclick="useInspiration('${img.prompt}')" class="px-4 py-2 rounded-full bg-white text-void text-xs font-semibold hover:scale-105 transition-transform">
+                                使用咒语
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(div);
+                    
+                    // Stagger animation
+                    setTimeout(() => div.classList.add('visible'), index * 100);
+                });
+            } catch (error) {
+                console.error('Failed to load images:', error);
+            }
+        }
+
+        function filterInspiration(category) {
+            state.currentFilter = category;
+            state.inspirationPage = 1;
+            
+            document.querySelectorAll('.insp-filter').forEach(btn => {
+                const isActive = btn.dataset.filter === category;
+                if (isActive) {
+                    btn.classList.remove('glass-ultra', 'text-gray-300');
+                    btn.classList.add('bg-white', 'text-void');
+                } else {
+                    btn.classList.add('glass-ultra', 'text-gray-300');
+                    btn.classList.remove('bg-white', 'text-void');
+                }
+            });
+            
+            renderInspiration();
+        }
+
+        function useInspiration(prompt) {
+            showSection('generate');
+            setPrompt(prompt);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function loadMoreInspiration() {
+            state.inspirationPage++;
+            renderInspiration();
+        }
+
+        // ==================== Initialization ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            initWebGL();
+            initCursor();
+            initGSAP();
+            
+            // Check daily quota
+            const lastDate = localStorage.getItem('starry_last_date');
+            const today = new Date().toDateString();
+            if (lastDate !== today) {
+                localStorage.setItem('starry_last_date', today);
+                localStorage.setItem('starry_quota', '50');
+            } else {
+                const saved = localStorage.getItem('starry_quota');
+                if (saved) {
+                    state.dailyQuota = parseInt(saved);
+                    document.getElementById('daily-quota').textContent = state.dailyQuota;
+                }
+            }
+
+            // Drag and drop
+            ['compress-dropzone', 'upscale-dropzone'].forEach(id => {
+                const zone = document.getElementById(id);
+                if (!zone) return;
+                
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('border-nebula-500/50');
+                });
+                
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('border-nebula-500/50');
+                });
+                
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('border-nebula-500/50');
+                    const files = e.dataTransfer.files;
+                    if (id === 'compress-dropzone') {
+                        document.getElementById('compress-input').files = files;
+                        handleCompressSelect({ target: { files } });
+                    } else {
+                        document.getElementById('upscale-input').files = files;
+                        handleUpscaleSelect({ target: { files: [files[0]] } });
+                    }
+                });
+            });
         });
 
-        // Parallax effect for hero background
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const heroBg = document.querySelector('.hero-bg');
-            if (heroBg) {
-                heroBg.style.transform = `translateY(${scrolled * 0.5}px)`;
-            }
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('starry_quota', state.dailyQuota);
         });
     </script>
 </body>
